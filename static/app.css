@@ -1,0 +1,21 @@
+#container { 
+    position: relative;
+    width: 700px;
+    height: 300px;
+}
+canvas { border: 1px solid #000; }
+.canvasContainer { 
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+.pauseGameCanvas {
+  position: absolute;
+  top: 15%;
+  left: 25%;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}

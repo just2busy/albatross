@@ -1,0 +1,128 @@
+{
+    "packageName": "Upper Case Greek Alphabet Letters",
+    "packagePrice": 0,
+    "languageName": "Greek",
+    "languageCode": "el",
+    "pages": [
+      {
+        "audio": "",
+        "question": "Alpha",
+        "answer": "Α"
+      },
+      {
+        "audio": "",
+        "question": "Beta",
+        "answer": "Β"
+      },
+      {
+        "audio": "",
+        "question": "Gamma",
+        "answer": "Γ"
+      },
+      {
+        "audio": "",
+        "question": "Delta",
+        "answer": "Δ"
+      },
+      {
+        "audio": "",
+        "question": "Epsilon",
+        "answer": "Ε"
+      },
+      {
+        "audio": "",
+        "question": "Zeta",
+        "answer": "Ζ"
+      },
+      {
+        "audio": "",
+        "question": "Eta",
+        "answer": "Η"
+      },
+      {
+        "audio": "",
+        "question": "Theta",
+        "answer": "Θ"
+      },
+      {
+        "audio": "",
+        "question": "Iota",
+        "answer": "Ι"
+      },
+      {
+        "audio": "",
+        "question": "Kappa",
+        "answer": "Κ"
+      },
+      {
+        "audio": "",
+        "question": "Lambda",
+        "answer": "Λ"
+      },
+      {
+        "audio": "",
+        "question": "Mu",
+        "answer": "Μ"
+      },
+      {
+        "audio": "",
+        "question": "Nu",
+        "answer": "Ν"
+      },
+      {
+        "audio": "",
+        "question": "Xi",
+        "answer": "Ξ"
+      },
+      {
+        "audio": "",
+        "question": "Omicron",
+        "answer": "Ο"
+      },
+      {
+        "audio": "",
+        "question": "Pi",
+        "answer": "Π"
+      },
+      {
+        "audio": "",
+        "question": "Rho",
+        "answer": "Ρ"
+      },
+      {
+        "audio": "",
+        "question": "Sigma",
+        "answer": "Σ"
+      },
+      {
+        "audio": "",
+        "question": "Tau",
+        "answer": "Τ"
+      },
+      {
+        "audio": "",
+        "question": "Upsilon",
+        "answer": "Υ"
+      },
+      {
+        "audio": "",
+        "question": "Phi",
+        "answer": "Φ"
+      },
+      {
+        "audio": "",
+        "question": "Chi",
+        "answer": "Χ"
+      },
+      {
+        "audio": "",
+        "question": "Psi",
+        "answer": "Ψ"
+      },
+      {
+        "audio": "",
+        "question": "Omega",
+        "answer": "Ω"
+      }
+    ]
+}

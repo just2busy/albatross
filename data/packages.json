@@ -1,0 +1,8 @@
+{
+    "packages": [
+      "data/lower-case-english-alphabet.en.json",
+      "data/lower-case-greek-alphabet.el.json",
+      "data/upper-case-english-alphabet.en.json",
+      "data/upper-case-greek-alphabet.el.json"
+    ]
+}
