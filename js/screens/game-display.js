@@ -1,12 +1,19 @@
 // TODO: figure out how to better handle different game modes
 var GameDisplay = (function() {
-    // Really need to move crap out of CanvasNavigation and put into AppGI
-    var gameDisplay = new CanvasNavigation();
-    var canvasId = 'backgroundCanvas';
+    var canvasId = 'backgroundCanvas', canvas;
     var gameState = window.gameState;
     var page;
+    var defaultTextStyles = [{property: 'font', value: '50px Comic Sans MS'},
+        {property: 'fillStyle', value: 'black'},
+        {property: 'textAlign', value: 'center'},
+        {property: 'textBaseline', value: 'middle'}];
+    var textStyles = defaultTextStyles;
 
-    // handle audio eventually
+    function getContext() {
+        return canvas.getContext('2d');
+    }
+
+    // handle audio eventually -- probably pull this out into GameController
     function renderAudio() {
         if (page.audio) {
 
@@ -22,38 +29,24 @@ var GameDisplay = (function() {
 
     function renderQuestion(font) {
         if (page.question) {
-            gameDisplay.styleText = function() { setTextStyle('30px ' + font); };
-            gameDisplay.writeText(page.question, 0, 25, gameState.containerWidth, 50);
+            CanvasRenderer.writeText(getContext(), page.question, canvas.width / 2, 25, textStyles);
         }
     }
 
     function renderAnswer(x, y, font) {
         if (page.answer) {
-            gameDisplay.styleText = function() { setTextStyle('50px Comic Sans MS'); };
-            gameDisplay.writeText(page.answer, x, y, gameState.containerWidth, 50);
+            CanvasRenderer.writeText(getContext(), page.answer, canvas.width / 2, canvas.height / 2, textStyles);
         }
     }
 
     function clearGameDisplay() {
-        gameDisplay.getCanvas().background = null;
-        context = gameDisplay.getContext();
-        context.globalCompositeOperation = 'destination-out';
-        context.fillRect(-10, -10, gameState.containerWidth + 20, gameState.containerHeight + 20, 'white');
-        context.globalCompositeOperation = 'source-over';
-    }
-
-    function setTextStyle(font) {
-        context = gameDisplay.getContext();
-        context.font = font;
-        context.fillStyle = 'black';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
+        canvas.background = null;
+        CanvasRenderer.clearRectangle(getContext(), 0, 0, canvas.width, canvas.height);
     }
 
     return {
         initialize: function() {
-            gameDisplay.setEventListeners = function() {}
-            canvas = gameDisplay.init(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
+            canvas = CanvasRenderer.createCanvas(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
             return canvas;
         },
         render: function(font) {

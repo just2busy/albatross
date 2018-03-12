@@ -9,11 +9,6 @@ canvas { border: 1px solid #000; }
   top: 0px;
   left: 0px;
 }
-.pauseGameCanvas {
-  position: absolute;
-  top: 15%;
-  left: 25%;
-}
 html, body {
   width: 100%;
   height: 100%;

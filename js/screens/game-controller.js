@@ -7,7 +7,7 @@ var GameController = (function(){
     var gameDisplay, gameTimer;
 
     function initDrawingCanvas() {
-        writingCanvas = AppGI.createCanvas(gameState.containerId, writingCanvasId, gameState.containerWidth, gameState.containerHeight);
+        writingCanvas = CanvasRenderer.createCanvas(gameState.containerId, writingCanvasId, gameState.containerWidth, gameState.containerHeight);
         context = writingCanvas.getContext('2d');
         context.strokeStyle = gameState.preferences.fontColor;
         context.lineWidth = 6;
@@ -186,7 +186,7 @@ var GameController = (function(){
             enableDraw = false;
             gameState.resetState();
             gameTimer.destroy();
-            return AppGI.destroy(elements);
+            return CanvasRenderer.destroy(elements);
         },
         resumeGame: function() {
             gameState.paused = false;

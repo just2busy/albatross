@@ -1,11 +1,18 @@
 var GameTimer = (function() {
     var gameTimer = new CanvasNavigation();
     var canvasId = 'gameTimerCanvas';
-    var context;
     var gameState = window.gameState;
     var timeStarted, waitTime = 5000, timeStopped, timerElapsedId, timerRemainingId;
     var timeElapsedX = 50, timeElapsedY = 50, timeElapsedRadius = 20;
     var timeRemainingX = 650, timeRemainingY = 50, timeRemainingRadius = 20;
+
+    var defaultCircleStyles = [{property: 'fillStyle', value: 'black'}];
+    var defaultTextStyles = [{property: 'font', value: '10px Comic Sans MS'},
+        {property: 'fillStyle', value: 'white'},
+        {property: 'textAlign', value: 'center'},
+        {property: 'textBaseline', value: 'middle'}];
+    var circleStyles = defaultCircleStyles;
+    var textStyles = defaultTextStyles;
 
     function clearIntervals() {
         clearInterval(timerElapsedId || 0);
@@ -19,42 +26,25 @@ var GameTimer = (function() {
         drawTimeElapsedCircle(diff);
     }
 
-    function createDiv(divId) {
-        return AppGI.createElement(gameState.containerId, divId, 'div');
-    }
-
-    function drawCircle(x, y, r, start, end, color) {
-        context.fillStyle = color;
-        context.beginPath();
-        context.arc(x, y, r, start, end, false);
-        context.closePath();
-        context.fill();
-    }
-
     function clearTimeElapsed() {
         timeStarted = null;
-        context.globalCompositeOperation = 'destination-out';
-        drawCircle(timeElapsedX, timeElapsedY, timeElapsedRadius + 2, 0, Math.PI * 2, 'white');
-        context.globalCompositeOperation = 'source-over';
+        CanvasRenderer.clearCircle(gameTimer.getContext(), timeElapsedX, timeElapsedY, timeElapsedRadius, circleStyles);
     }
 
     function clearTimeRemaining() {
         timeStopped = null;
-        context.globalCompositeOperation = 'destination-out';
-        drawCircle(timeRemainingX, timeRemainingY, timeRemainingRadius + 2, 0, Math.PI * 2, 'white');
-        context.globalCompositeOperation = 'source-over';
+        CanvasRenderer.clearCircle(gameTimer.getContext(), timeRemainingX, timeRemainingY, timeRemainingRadius, circleStyles);
     }
 
-    function drawTimeElapsed(time, x, y, r, color) {
+    function drawTimeElapsed(time, x, y, r, circleStyles) {
         time = time / 1000;
         time = time.toFixed(1);
-        drawCircle(x, y, r - 1, 0, Math.PI * 2, color);
-        gameTimer.writeText(time, x, y, 0, 0);
+        CanvasRenderer.drawCircle(gameTimer.getContext(), x, y, r - 1, 0, Math.PI * 2, circleStyles);
+        CanvasRenderer.writeText(gameTimer.getContext(), time, x, y, textStyles);
     }
 
     function drawTimeElapsedCircle(timeElapsed) {
-        var color = 'black';
-        drawTimeElapsed(timeElapsed, timeElapsedX, timeElapsedY, timeElapsedRadius, color);
+        drawTimeElapsed(timeElapsed, timeElapsedX, timeElapsedY, timeElapsedRadius, circleStyles);
     }
 
     function drawTimeRemainingCircle(timeLeft) {
@@ -62,8 +52,8 @@ var GameTimer = (function() {
             clearTimeRemaining();
         } else {
             var percent = 1 - timeLeft / waitTime;
-            var color = 'rgba('+Math.floor(255 * percent)+',0,0,1)';
-            drawTimeElapsed(timeLeft, timeRemainingX, timeRemainingY, timeRemainingRadius, color);
+            var circleStyles = [{property: 'fillStyle', value: 'rgba('+Math.floor(255 * percent)+',0,0,1)'}];
+            drawTimeElapsed(timeLeft, timeRemainingX, timeRemainingY, timeRemainingRadius, circleStyles);
         }
     }
 
@@ -102,13 +92,6 @@ var GameTimer = (function() {
     return {
         initialize: function() {
             gameTimer.init(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
-            context = gameTimer.getContext();
-            context.styleText = function() {
-                context.font = '10px Times';
-                context.fillStyle = 'white';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-            }
             return gameTimer.getCanvas();
         },
         restart: function() {

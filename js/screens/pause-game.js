@@ -2,20 +2,20 @@ var PauseGame = (function() {
     var pauseGame = new CanvasNavigation();
     var canvasId = 'pauseGameCanvas';
     var gameState = window.gameState;;
+    var width = gameState.containerWidth / 2, height = gameState.containerHeight / 1.5;
 
     function initialize() {
-        var canvas = pauseGame.init(gameState.containerId, canvasId, gameState.containerWidth / 2, gameState.containerHeight / 1.5);
-        canvas.classList.remove('canvasContainer');
-        canvas.classList.add('pauseGameCanvas');
-        drawBackground(gameState.containerWidth / 2, gameState.containerHeight / 1.5);
+        var canvas = pauseGame.init(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
+        drawBackground();
         return canvas;
     }
 
-    function drawBackground(width, height) {
-        var buttonStyle = pauseGame.styleButton;
-        pauseGame.styleButton = function() { pauseGame.getContext().fillStyle = 'white' };
-        pauseGame.drawButton(0, 0, width, height);
-        pauseGame.styleButton = buttonStyle;
+    function drawBackground() {
+        var styles = [{property: 'fillStyle', value: 'white'},
+            {property: 'strokeStyle', value: 'black'}];
+        var x = (pauseGame.getCanvas().width - width) / 2;
+        var y = (pauseGame.getCanvas().height - height) / 2;
+        CanvasRenderer.drawRectangle(pauseGame.getContext(), x, y, width, height, styles);
     }
 
     function drawPageResults() {
@@ -24,24 +24,31 @@ var PauseGame = (function() {
 
     function drawNextPageButton() {
         if (!gameState.gameOver) {
-            pauseGame.createButton('advanceGameEvent', window.router.getRoute('advanceGame'), 'Next Page', 75, 15, 200, 50);
+            var x = (pauseGame.getCanvas().width - width) / 2 + 75;
+            var y = (pauseGame.getCanvas().height - height) / 2 + 15;
+            pauseGame.createButton('advanceGameEvent', window.router.getRoute('advanceGame'), 'Next Page', x, y, 200, 50);
         }
     }
 
     function drawResumeGameButton() {
-        pauseGame.createButton('resumeGameEvent', window.router.getRoute('resumeGame'), 'Resume Game', 75, 15, 200, 50);
+        var x = (pauseGame.getCanvas().width - width) / 2 + 75;
+        var y = (pauseGame.getCanvas().height - height) / 2 + 15;
+    pauseGame.createButton('resumeGameEvent', window.router.getRoute('resumeGame'), 'Resume Game', x, y, 200, 50);
     }
 
     function drawRestartGameButton() {
-        pauseGame.createButton('restartGameEvent', window.router.getRoute('restartGame'), 'Restart Game', 75, 75, 200, 50);
-
+        var x = (pauseGame.getCanvas().width - width) / 2 + 75;
+        var y = (pauseGame.getCanvas().height - height) / 2 + 75;
+        pauseGame.createButton('restartGameEvent', window.router.getRoute('restartGame'), 'Restart Game', x, y, 200, 50);
     }
 
     function drawReturnMainMenuButton() {
+        var x = (pauseGame.getCanvas().width - width) / 2 + 75;
+        var y = (pauseGame.getCanvas().height - height) / 2 + 135;
         pauseGame.createButton('mainMenuEvent', function() {
             gameState.resetState();
             window.router.getRoute('mainMenu')();
-        }, 'Return Main Menu', 75, 135, 200, 50);
+        }, 'Return Main Menu', x, y, 200, 50);
     }
 
     return {
