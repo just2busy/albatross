@@ -27,6 +27,9 @@ var GameState = (function() {
                 case 'randomize': this.randomize = value; break;
                 case 'difficulty': this.difficulty = value; break;
                 case 'maxPages': this.maxPages = value; break;
+                case 'font': this.preferences.font = value; break;
+                case 'fontColor': this.preferences.fontColor = value; break;
+                case 'voiceSettings': break;
             }
         },
 
@@ -36,6 +39,10 @@ var GameState = (function() {
                 case 'randomize': return this.randomize;
                 case 'difficulty': return this.difficulty;
                 case 'maxPages': return this.maxPages;
+                case 'font': return { name: 'font', value: this.preferences.font };
+                case 'fontColor': return { name: 'fontColor', value: this.preferences.fontColor };
+                case 'voiceSettings': return { name: 'voiceSettings', value: null };
+                default: return {};
             }
         },
 

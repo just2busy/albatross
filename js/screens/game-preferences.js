@@ -12,6 +12,11 @@ var Preferences = (function() {
     var textStyles = defaultTextStyles;
 
     var buttonMethods = [];
+
+    // should probably move these types of default settings into a config file/local storage
+    var font = 'Comic Sans MS';
+    var fontColor = 'rgba(255,0,0,1)';
+
     // temporary settings until right numbers are determined
     var easyDifficulty = { name: 'easy',
             blur_size: 3,
@@ -35,7 +40,7 @@ var Preferences = (function() {
     var difficultyRanges = { blur_size: ['Blur Size', 1, 9],
             lap_thres: ['Laplacian Limit', 1, 40],
             eigen_thres: ['Eigen Limit', 1, 40],
-            match_threshold: ['Match Threshold', 1, 100],
+            match_threshold: ['Match Limit', 1, 100],
             number_points: ['Match Points', 50, 2000]
         };
  
@@ -54,8 +59,12 @@ var Preferences = (function() {
         preferences.setButtonStyles(defaultButtonStyles);
     }
 
+    function clearCenterArea() {
+        CanvasRenderer.clearRectangle(preferences.getContext(), 270, 20, 160, 200);
+    }
     function optionCallback(type, value) {
         return function() {
+            clearCenterArea();
             gameState.setOption(type, value);
             drawOptionButtons(type);
         }
@@ -63,11 +72,30 @@ var Preferences = (function() {
 
     // set writing preferences
     // writing color, font 
+    function drawChooseFontButton() {
+        preferences.createButton('chooseFontEvent', function() {
+            optionCallback('font', font)();
+        }, 'Font', 50, 25, 150, 50);
+    }
+
+    function drawChooseFontColorButton() {
+        preferences.createButton('chooseFontColorEvent', function() {
+            optionCallback('fontColor', fontColor)();
+            drawColorPicker();
+        }, 'Font Color', 50, 100, 150, 50);
+    }
+
     function drawColorPicker() {
     }
 
     // set tts voice
-    
+    function drawCustomVoiceButton() {
+        preferences.createButton('customVoiceEvent', function() {
+            optionCallback('voiceSettings', '')();
+            
+        }, 'Customize Voice', 50, 175, 150, 50);
+    }
+
     // set difficulty preferences
     function drawEasyDifficultyButton() {
         preferences.createButton('easyDifficultyEvent', optionCallback('difficulty', easyDifficulty), 'Easy Difficulty', 500, 25, 150, 50);
@@ -79,9 +107,9 @@ var Preferences = (function() {
 
     function drawCustomDifficultyButton() {
         preferences.createButton('customDifficultyEvent', function() {
-                drawCustomDifficultySliders();
-                optionCallback('difficulty', customDifficulty)();
-            }, 'Custom Difficulty', 500, 175, 150, 50);
+            optionCallback('difficulty', customDifficulty)();
+            drawCustomDifficultySliders();
+        }, 'Custom Difficulty', 500, 175, 150, 50);
     }
 
     function createSliderCallbackFunction(eventName, propertyName, leftBound, topBound, width, height) {
@@ -119,16 +147,30 @@ var Preferences = (function() {
     }
 
     // link device to account
-    function drawLinkDeviceButton() {}
+    function drawLinkDeviceButton() {
+        preferences.createButton('linkDeviceEvent', function() {
+            clearCenterArea();
+            // Make a call to link device to account
+            displayLinkCode('PLACEHOLDER');
+        }, 'Link Device', 50, 240, 150, 50);
+    }
+
+    function displayLinkCode(linkDeviceCode) {
+        CanvasRenderer.writeText(preferences.getContext(), linkDeviceCode, gameState.containerWidth / 2, gameState.containerHeight / 2.25, defaultTextStyles);
+    }
 
     return {
         initialize: function() {
             var canvas = preferences.init(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
+            buttonMethods.push( { optionType: 'font', optionValue: font, function: drawChooseFontButton });
+            buttonMethods.push( { optionType: 'fontColor', optionValue: fontColor, function: drawChooseFontColorButton });
+            buttonMethods.push( { optionType: 'voiceSettings', optionValue: '', function: drawCustomVoiceButton });
             buttonMethods.push( { optionType: 'difficulty', optionValue: easyDifficulty, function: drawEasyDifficultyButton });
             buttonMethods.push( { optionType: 'difficulty', optionValue: hardDifficulty, function: drawHardDifficultyButton });
             buttonMethods.push( { optionType: 'difficulty', optionValue: customDifficulty, function: drawCustomDifficultyButton });
 
             drawOptionButtons();
+            drawLinkDeviceButton();
             drawReturnMainMenuButton();
             return [ canvas ];
         }
