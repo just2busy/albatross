@@ -82,9 +82,10 @@ var ComputerVision = (function(){
         }
     };
 
-    function preConfigure(imageWidth, imageHeight) {
+    function preConfigure(imageWidth, imageHeight, difficulty) {
         width = imageWidth;
         height = imageHeight;
+        options = difficulty;
         img_u8 = new jsfeat.matrix_t(width, height, jsfeat.U8_t | jsfeat.C1_t);
         // after blur
         img_u8_smooth = new jsfeat.matrix_t(width, height, jsfeat.U8_t | jsfeat.C1_t);
@@ -287,14 +288,9 @@ var ComputerVision = (function(){
         };
     }
 
-    function configureOptions() {
-        options = window.ComputerVision.options;
-    }
-
     return {
-        compareImages: function(original, copy, width, height) {
-            configureOptions();
-            preConfigure(width, height);
+        compareImages: function(original, copy, width, height, difficulty) {
+            preConfigure(width, height, difficulty);
             prepareImage(original);
             train_pattern();
             prepareImage(copy);
@@ -303,12 +299,3 @@ var ComputerVision = (function(){
         }
     }
 }());
-
-// temporarily put this in global scope to find good values for difficulty settings
-window.ComputerVision.options = {
-        blur_size: 3,
-        lap_thres: 1,
-        eigen_thres: 1,
-        match_threshold: 40,
-        number_points: 2000
-    }

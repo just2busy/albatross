@@ -29,6 +29,7 @@ var GameMode = (function() {
                 buttonMethod.function();
             }
         });
+        gameMode.setButtonStyles(defaultButtonStyles);
     }
 
     function optionCallback(type, value) {
@@ -50,15 +51,15 @@ var GameMode = (function() {
 
     function writeValidationMessages(issues) {
         CanvasRenderer.clearRectangle(gameMode.getContext(), 475, 200, 200, 100);
-        var textStyles = [{property: 'font', value: '20px Comic Sans MS'},
+        var textStyles = [{property: 'font', value: '10px Comic Sans MS'},
             {property: 'fillStyle', value: 'red'},
             {property: 'textAlign', value: 'left'},
             {property: 'textBaseline', value: 'middle'}];
         var y = 225;
         issues.forEach(function(issue) {
-            CanvasRenderer.writeText(issue, 475, y, textStyles);
+            CanvasRenderer.writeText(gameMode.getContext(), issue, 475, y, textStyles);
             y = y + 20;
-        })
+        });
     }
 
     function drawPracticeModeButton() {
@@ -66,19 +67,37 @@ var GameMode = (function() {
     }
 
     function drawTimedModeButton() {
-        gameMode.createButton('timedModeEvent', optionCallback('gameMode', 'timedMode'), 'Timed', 50, 150, 150, 50);
+        gameMode.createButton('timedModeEvent', optionCallback('gameMode', 'timedMode'), 'Timed', 50, 125, 150, 50);
+    }
+
+    function drawQuizModeButton() {
+        gameMode.createButton('quizModeEvent', optionCallback('gameMode', 'quizMode'), 'Quiz', 275, 50, 150, 50);
+    }
+
+    function drawJeopardyModeButton() {
+        gameMode.createButton('jeopardyModeEvent', optionCallback('gameMode', 'jeopardyMode'), 'Jeopardy', 275, 125, 150, 50);
     }
 
     function drawRandomizePagesButton() {
-        gameMode.createButton('randomizeEvent', optionCallback('randomize', !gameState.randomize), 'Randomize', 275, 50, 150, 50);
+        gameMode.createButton('randomizeEvent', optionCallback('randomize', !gameState.randomize), 'Randomize', 500, 50, 150, 50);
     }
 
-    function drawEasyDifficultyButton() {
-        gameMode.createButton('easyDifficultyEvent', optionCallback('difficulty', 'easyDifficulty'), 'Easy Difficulty', 475, 50, 150, 50);
+    var calculateMaxPages = function(x, y) {
+        var maxPages = Math.max(Math.ceil((x - 500) / 150 * gameState.package.pages.length),1);
+        maxPages = maxPages > gameState.package.pages.length ? gameState.package.pages.length : maxPages;
+        gameState.setOption('maxPages', maxPages);
+        drawMaxPagesSlider();
     }
 
-    function drawHardDifficultyButton() {
-        gameMode.createButton('hardDifficultyEvent', optionCallback('difficulty', 'hardDifficulty'), 'Hard Difficulty', 475, 150, 150, 50);
+    function drawMaxPagesSlider() {
+        var topLeftX = gameState.maxPages / gameState.package.pages.length * 150 + 490;
+
+        var textStyles = [{property: 'font', value: '20px Comic Sans MS'},
+            {property: 'fillStyle', value: 'black'},
+            {property: 'textAlign', value: 'center'},
+            {property: 'textBaseline', value: 'top'}];
+        var text = 'Max Pages: ' + gameState.maxPages;
+        gameMode.createSlider('maxPagesSliderEvent', calculateMaxPages, text, topLeftX, 500, 125, 150, 50, textStyles, defaultButtonStyles);
     }
 
     function drawSelectPackageButton() {
@@ -94,9 +113,10 @@ var GameMode = (function() {
             gameMode.init(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
             buttonMethods.push( { optionType: 'gameMode', optionValue: 'practiceMode', function: drawPracticeModeButton });
             buttonMethods.push( { optionType: 'gameMode', optionValue: 'timedMode', function: drawTimedModeButton });
+            buttonMethods.push( { optionType: 'gameMode', optionValue: 'quizMode', function: drawQuizModeButton });
+            buttonMethods.push( { optionType: 'gameMode', optionValue: 'jeopardyMode', function: drawJeopardyModeButton });
             buttonMethods.push( { optionType: 'randomize', optionValue: true, function: drawRandomizePagesButton });
-            buttonMethods.push( { optionType: 'difficulty', optionValue: 'easyDifficulty', function: drawEasyDifficultyButton });
-            buttonMethods.push( { optionType: 'difficulty', optionValue: 'hardDifficulty', function: drawHardDifficultyButton });
+            buttonMethods.push( { optionType: 'maxPages', optionValue: gameState.package.pages.length, function: drawMaxPagesSlider });
     
             drawSelectedPackageName();
             drawOptionButtons();

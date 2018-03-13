@@ -1,6 +1,7 @@
 function startApp() {
     window.router.addRoute('mainMenu', MainMenu.initialize, true);
     window.router.addRoute('selectPackage', SelectPackage.initialize, true);
+    window.router.addRoute('setPreferences', Preferences.initialize, true);
     window.router.addRoute('gameMode', GameMode.initialize, false, CanvasRenderer.destroy);
     window.router.addRoute('game', GameController.initialize, false, GameController.destroy);
     window.router.addRoute('advanceGame', GameController.advanceGame, false, CanvasRenderer.destroy);

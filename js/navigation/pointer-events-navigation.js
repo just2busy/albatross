@@ -1,17 +1,18 @@
 var PointerEventsNavigation = (function() {
     var isActive, initialX, initialY;
-    var callbackFunctions = [];
+    var callbackFunctions = [], currentCallbackFunction;
 
     function resetState() {
         isActive = false;
         initialX = null;
         initialY = null;
+        currentCallbackFunction = null;
     }
 
-    function executeCallbacks(currentX, currentY) {
+    function findCallbackFunction(currentX, currentY) {
         return callbackFunctions.some(function (callbackFunction) {
             if(callbackFunction.conditionFunction(currentX, currentY)) {
-                callbackFunction.callbackFunction();
+                currentCallbackFunction = callbackFunction;
                 return true;
             }
         });
@@ -26,22 +27,22 @@ var PointerEventsNavigation = (function() {
     return {
         onPointerUp: function(event) {
             if (isActive) {
-                executeCallbacks(event.offsetX, event.offsetY);
+                currentCallbackFunction.callbackFunction(event.offsetX, event.offsetY);
                 resetState();
             }
         },
 
         onPointerDown: function(event) {
-            isActive = true;
-            initialX = event.offsetX;
-            initialY = event.offsetY;
+            if (findCallbackFunction(event.offsetX, event.offsetY)) {
+                isActive = true;
+                initialX = event.offsetX;
+                initialY = event.offsetY;
+            }
         },
 
         onPointerMove: function(event) {
-            if (isActive) {
-                if (executeCallbacks(event.offsetX, event.offsetY)) {
-                    resetState();
-                }
+            if (isActive && currentCallbackFunction && currentCallbackFunction.callIfActive) {
+                currentCallbackFunction.callbackFunction(event.offsetX, event.offsetY);
             }
         },
 
@@ -52,14 +53,15 @@ var PointerEventsNavigation = (function() {
         },
 
         // Add a callback function to execute if a specific condition is met.
-        // conditionFunction should take the currentX and currentY values to determine.
-        addCallback: function(eventName, callbackFunction, conditionFunction) {
+        // conditionFunction should take the initialX and initialY values to determine.
+        addCallback: function(eventName, callbackFunction, conditionFunction, callIfActive) {
             // remove existing callback if exists
             this.removeCallback(eventName);
-            return callbackFunctions.push({
+            callbackFunctions.push({
                 eventName: eventName,
                 callbackFunction: callbackFunction,
-                conditionFunction: conditionFunction
+                conditionFunction: conditionFunction,
+                callIfActive: callIfActive || false
             });
         },
 

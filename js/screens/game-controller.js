@@ -137,7 +137,7 @@ var GameController = (function(){
     // drawing finished! time to score and update
     function onTimerExpiredCallback(timingData) {
         gameState.paused = true;
-        if (currentPage === availablePages.length) {
+        if (currentPage === gameState.maxPages - 1) {
             gameState.gameOver = true;
         }
         console.log(timingData);
@@ -145,7 +145,8 @@ var GameController = (function(){
             getAnswerImageData(),
             context.getImageData(0, 0, gameState.containerWidth, gameState.containerHeight),
             gameState.containerWidth,
-            gameState.containerHeight
+            gameState.containerHeight,
+            gameState.difficulty
         );
         console.log(results);
         window.router.getRoute('scoreGame')();
@@ -158,7 +159,7 @@ var GameController = (function(){
         gameState.gameOver = false;
         clearWritingCanvas();
         gameTimer.restart();
-}
+    }
 
     return {
         initialize: function() {
@@ -190,7 +191,9 @@ var GameController = (function(){
         },
         resumeGame: function() {
             gameState.paused = false;
-            gameTimer.restartElapsedTimer();
+            if (elapsedTimerStarted) {
+                gameTimer.restartElapsedTimer();
+            }
         },
         advanceGame: function() {
             resetGameState();

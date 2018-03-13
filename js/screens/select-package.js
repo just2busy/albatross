@@ -33,6 +33,7 @@ var SelectPackage = (function () {
         var y = Math.floor(packageIndex / packagesPerRow) * (height + 15) + 15;
         selectPackage.createButton('loadPackage' + packageIndex + 'Event', function () {
                 gameState.package = packages[packageIndex];
+                gameState.setOption('maxPages', gameState.package.pages.length);
                 window.router.getRoute('gameMode')();
             },
         packages[packageIndex].packageName, x, y, width, height, 10);

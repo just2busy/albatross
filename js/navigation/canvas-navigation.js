@@ -24,6 +24,12 @@ var CanvasNavigation = (function () {
             canvas.addEventListener('pointerup', navigation.onPointerUp, false); 
         },
 
+        createSlider: function(eventName, callbackFunction, sliderText, knobX, x, y, width, height, textStyles, sliderStyles) {
+            CanvasRenderer.drawSlider(context, sliderText, knobX, x, y, width, height, textStyles, sliderStyles);
+            conditionFunction = navigation.regionHitConditionFunction(x, y + height - 15, width, 15);
+            navigation.addCallback(eventName, callbackFunction, conditionFunction, true);
+        },
+
         createButton: function(eventName, callbackFunction, buttonText, x, y, width, height, textMargin) {
             CanvasRenderer.createButton(context, buttonText, x, y, width, height, buttonStyles, textStyles, textMargin);
             conditionFunction = navigation.regionHitConditionFunction(x, y, width, height);

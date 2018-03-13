@@ -76,6 +76,15 @@ var CanvasRenderer = (function() {
             context.closePath();
         },
 
+        drawSlider: function(context, text, knobX, x, y, width, height, textStyles, sliderStyles) {
+            this.clearRectangle(context, x - 5, y - 5, width + 10, height + 10);
+            var textX = determineX(x, width, textStyles, 0);
+            var textY = determineY(y, height, textStyles, 0);
+            this.writeText(context, text, textX, textY, textStyles);
+            this.drawRectangle(context, x, y + height - 10, width, 5, sliderStyles);
+            this.drawRectangle(context, knobX, y + height - 15, 5, 15, sliderStyles);
+        },
+
         writeText: function(context, text, x, y, styles) {
             setContextStyle(context, styles);
             context.beginPath();

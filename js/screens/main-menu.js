@@ -8,7 +8,7 @@ var MainMenu = (function() {
 
     // TODO: create preferences menu
     function drawPreferencesButton() {
-        mainMenu.createButton('setPreferencesEvent', function(){}, 'Preferences', 50, 150, 150, 50);
+        mainMenu.createButton('setPreferencesEvent', window.router.getRoute('setPreferences'), 'Preferences', 50, 150, 150, 50);
     }
 
     return {

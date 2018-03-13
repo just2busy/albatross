@@ -48,7 +48,7 @@ var PauseGame = (function() {
         pauseGame.createButton('mainMenuEvent', function() {
             gameState.resetState();
             window.router.getRoute('mainMenu')();
-        }, 'Return Main Menu', x, y, 200, 50);
+        }, 'Return to Main Menu', x, y, 200, 50);
     }
 
     return {
