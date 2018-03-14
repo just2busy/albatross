@@ -115,10 +115,11 @@ var GameController = (function(){
         return gameState.package.pages[availablePages[currentPage]];
     }
     
-    function configureGameDisplay() {
+    function initializeGameDisplay() {
+        currentPage = 0;
         generatePages();
-        gameDisplay = new GameDisplay();
-        gameDisplay.setPage(getPage());
+        gameDisplay = new gameState.gameMode(getPage());
+        gameDisplay.render();
     }
 
     function getAnswerImageData() {
@@ -165,15 +166,12 @@ var GameController = (function(){
         initialize: function() {
             gameState = window.gameState;    
 
-            currentPage = 0;
-            configureGameDisplay();
-            var backgroundCanvas = gameDisplay.initialize();
-            gameDisplay.render(gameState.preferences.font);
+            initializeGameDisplay();
 
             gameTimer = new GameTimer();
             var gameTimerCanvas = gameTimer.initialize();
             writingCanvas = initDrawingCanvas();
-            return [ backgroundCanvas, gameTimerCanvas, writingCanvas ];
+            return [ gameDisplay.canvas, gameTimerCanvas, writingCanvas ];
         },
         restartGame: function() {
             resetGameState();
@@ -198,8 +196,8 @@ var GameController = (function(){
         advanceGame: function() {
             resetGameState();
             currentPage++;
-            gameDisplay.setPage(getPage());
-            gameDisplay.render(gameState.preferences.font);
+            gameDisplay.page = getPage();
+            gameDisplay.render();
         }
     }
 }());

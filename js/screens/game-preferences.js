@@ -60,8 +60,9 @@ var Preferences = (function() {
     }
 
     function clearCenterArea() {
-        CanvasRenderer.clearRectangle(preferences.getContext(), 270, 20, 160, 200);
+        CanvasRenderer.clearRectangle(preferences.getContext(), 225, 20, 250, 200);
     }
+
     function optionCallback(type, value) {
         return function() {
             clearCenterArea();

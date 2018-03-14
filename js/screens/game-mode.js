@@ -63,19 +63,19 @@ var GameMode = (function() {
     }
 
     function drawPracticeModeButton() {
-        gameMode.createButton('practiceModeEvent', optionCallback('gameMode', 'practiceMode'), 'Practice', 50, 50, 150, 50);
+        gameMode.createButton('practiceModeEvent', optionCallback('gameMode', PracticeModeRenderer), 'Practice', 50, 50, 150, 50);
     }
 
     function drawTimedModeButton() {
-        gameMode.createButton('timedModeEvent', optionCallback('gameMode', 'timedMode'), 'Timed', 50, 125, 150, 50);
+        gameMode.createButton('timedModeEvent', optionCallback('gameMode', TimedModeRenderer), 'Timed', 50, 125, 150, 50);
     }
 
     function drawQuizModeButton() {
-        gameMode.createButton('quizModeEvent', optionCallback('gameMode', 'quizMode'), 'Quiz', 275, 50, 150, 50);
+        gameMode.createButton('quizModeEvent', optionCallback('gameMode', QuizModeRenderer), 'Quiz', 275, 50, 150, 50);
     }
 
     function drawJeopardyModeButton() {
-        gameMode.createButton('jeopardyModeEvent', optionCallback('gameMode', 'jeopardyMode'), 'Jeopardy', 275, 125, 150, 50);
+        gameMode.createButton('jeopardyModeEvent', optionCallback('gameMode', JeopardyModeRenderer), 'Jeopardy', 275, 125, 150, 50);
     }
 
     function drawRandomizePagesButton() {
@@ -111,10 +111,10 @@ var GameMode = (function() {
     return {
         initialize: function() {
             gameMode.init(gameState.containerId, canvasId, gameState.containerWidth, gameState.containerHeight);
-            buttonMethods.push( { optionType: 'gameMode', optionValue: 'practiceMode', function: drawPracticeModeButton });
-            buttonMethods.push( { optionType: 'gameMode', optionValue: 'timedMode', function: drawTimedModeButton });
-            buttonMethods.push( { optionType: 'gameMode', optionValue: 'quizMode', function: drawQuizModeButton });
-            buttonMethods.push( { optionType: 'gameMode', optionValue: 'jeopardyMode', function: drawJeopardyModeButton });
+            buttonMethods.push( { optionType: 'gameMode', optionValue: PracticeModeRenderer, function: drawPracticeModeButton });
+            buttonMethods.push( { optionType: 'gameMode', optionValue: TimedModeRenderer, function: drawTimedModeButton });
+            buttonMethods.push( { optionType: 'gameMode', optionValue: QuizModeRenderer, function: drawQuizModeButton });
+            buttonMethods.push( { optionType: 'gameMode', optionValue: JeopardyModeRenderer, function: drawJeopardyModeButton });
             buttonMethods.push( { optionType: 'randomize', optionValue: true, function: drawRandomizePagesButton });
             buttonMethods.push( { optionType: 'maxPages', optionValue: gameState.package.pages.length, function: drawMaxPagesSlider });
     
