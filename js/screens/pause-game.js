@@ -11,8 +11,10 @@ var PauseGame = (function() {
     }
 
     function drawBackground() {
-        var styles = [{property: 'fillStyle', value: 'white'},
-            {property: 'strokeStyle', value: 'black'}];
+        var styles = {
+            fillStyle: 'rgba(255,255,255,1)',
+            strokeStyle: 'rgba(0,0,0,1)'
+        };
         var x = (pauseGame.getCanvas().width - width) / 2;
         var y = (pauseGame.getCanvas().height - height) / 2;
         CanvasRenderer.drawRectangle(pauseGame.getContext(), x, y, width, height, styles);

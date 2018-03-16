@@ -1,4 +1,8 @@
 function startApp() {
+    addRoutes();
+}
+
+function addRoutes() {
     window.router.addRoute('mainMenu', MainMenu.initialize, true);
     window.router.addRoute('selectPackage', SelectPackage.initialize, true);
     window.router.addRoute('setPreferences', Preferences.initialize, true);

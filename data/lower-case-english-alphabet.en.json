@@ -1,8 +1,20 @@
 {
     "packageName": "Lower Case English Alphabet Letters",
     "packagePrice": 0.00,
+    "packageVersion": 0.01,
     "languageName": "English",
     "languageCode": "en",
+    "gameModeRenderers": [
+        {
+            "renderer": "PracticeModeRenderer"
+        },
+        {
+            "renderer": "TimedModeRenderer"
+        },
+        {
+            "renderer": "QuizModeRenderer"
+        }
+    ],
     "pages": [
         {
             "audio": "",

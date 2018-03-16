@@ -1,10 +1,8 @@
 var GameController = (function(){
-    var elapsedTimerStarted = false, remainingTimerId = 0;
-    var drawingStarted = false;
-    var enableDraw = false;
-    var writingCanvas, writingCanvasId = 'drawingCanvas', context;
     var gameState, availablePages = [], currentPage = 0;
-    var gameDisplay, gameTimer;
+    var layout, timers = {}, gameDisplay, gameDisplayTimerId;
+    var drawingStarted = false, enableDraw = false;
+    var writingCanvas, writingCanvasId = 'drawingCanvas', context;
 
     function initDrawingCanvas() {
         writingCanvas = CanvasRenderer.createCanvas(gameState.containerId, writingCanvasId, gameState.containerWidth, gameState.containerHeight);
@@ -38,13 +36,12 @@ var GameController = (function(){
     }
 
     function onPointerDown(event) {
+        if (!drawingStarted) {
+            drawingStarted = true;
+            startTimers();
+        }
         enableDraw = true;
         context.beginPath();
-        if (!elapsedTimerStarted) {
-            elapsedTimerStarted = true;
-            gameTimer.startElapsedTimer();
-        }
-        gameTimer.stopTimeRemainingTimer();
     }
 
     function onPointerUp(event) {
@@ -53,8 +50,6 @@ var GameController = (function(){
                 context.closePath();
                 enableDraw = false;
             }
-            drawingStarted = false;
-            gameTimer.startRemainingTimer(onTimerExpiredCallback);
         }
     }
 
@@ -68,8 +63,7 @@ var GameController = (function(){
                         enableDraw = false;
                     }
                     gameState.paused = true;
-                    gameTimer.setStoppedTime();
-                    gameTimer.destroy(); // Only clears intervals but should probably change
+                    stopTimers();
                     window.router.getRoute('pauseGame')();
                     break;
             }
@@ -77,9 +71,7 @@ var GameController = (function(){
     }
 
     function clearWritingCanvas() {
-        context.globalCompositeOperation = 'destination-out';
-        context.fillRect(-10, -10, gameState.containerWidth + 20, gameState.containerHeight + 20, 'white');
-        context.globalCompositeOperation = 'source-over';
+        CanvasRenderer.clearRectangle(this.context, 0, 0, this.canvas.width, this.canvas.height);
     }
 
     function generatePages() {
@@ -118,8 +110,103 @@ var GameController = (function(){
     function initializeGameDisplay() {
         currentPage = 0;
         generatePages();
-        gameDisplay = new gameState.gameMode(getPage());
+        layout = LayoutRenderer.buildLayout(gameState.gameMode.name);
+        gameDisplay = new gameState.gameMode(getPage(), layout);
+        addTimers();
         gameDisplay.render();
+    }
+
+    // These are functions to handle timers
+    function createTimerStartCallback(time) {
+        if (time.maxTime > 0) {
+            return function(timeElapsed) {
+                var timeRemaining = time.maxTime - timeElapsed;
+                var percent = 1 - timeRemaining / time.maxTime;
+                timeRemaining = timeRemaining / 1000;
+                timeRemaining = timeRemaining.toFixed(1);
+                time.circleStyles.fillStyle = 'rgba('+Math.floor(255 * percent)+',0,0,1)';
+                if (timeRemaining <= 0) {
+                    timeRemaining = 0;
+                    setTimeout(calculateScore.bind(this), 100);
+                }
+                time.time = timeRemaining;
+            }
+        }
+        return function(timeElapsed) {
+            time.time = (timeElapsed / 1000).toFixed(1);
+        };
+    }
+
+    function createTimerStopCallback(time) {
+        time.display = false;
+        if (time.renderMode === 'always') {
+            return function() {};
+        }
+        return function() {
+            time.display = !time.display;
+            gameDisplay.clearTime(time);
+        };
+    }
+
+    function addTimers() {
+        Object.keys(layout.times).forEach(function (timeId) {
+            var time = layout.times[timeId];
+            time.circleStyles = LayoutRenderer.getStyles(layout, 'times.' + timeId, 'circleStyles');
+            time.textStyles = LayoutRenderer.getStyles(layout, 'times.' + timeId, 'textStyles');
+            var start = createTimerStartCallback(time);
+            var stop = createTimerStopCallback(time);
+            var timer = new StopWatch(start, stop);
+            gameDisplay.addTime(timeId, time);
+            timers[timeId] = {timer: timer, time: time};
+        });
+    }
+
+    // TODO: handle start/resume/restart
+    // start - totalTime restarts, !totalTime starts
+    // resume - totalTime restarts, !totalTime restarts
+    // restart - totalTime starts from last lap, !totalTime starts
+    function startTimers() {
+        Object.keys(timers).forEach(function(timerId) {
+            var timer = timers[timerId];
+            if (timer.time.renderMode !== 'hidden') {
+                timer.time.display = true;
+            }
+            if (timer.time.totalTime) {
+                timer.timer.restartTimer();
+            } else {
+                timer.timer.startTimer();
+            }
+        });
+        gameDisplayTimerId = setInterval(gameDisplay.renderTimes.bind(gameDisplay), 100);
+    }
+
+    function stopTimers() {
+        Object.keys(timers).forEach(function(timerId) {
+            var timer = timers[timerId];
+            timer.timer.lapTimer();
+            timer.timer.stopTimer();
+        });
+        clearInterval(gameDisplayTimerId);
+        gameDisplayTimerId = null;
+    }
+
+    // drawing finished! time to score and update
+    function calculateScore() {
+        gameState.paused = true;
+        if (currentPage === gameState.maxPages - 1) {
+            gameState.gameOver = true;
+        }
+        stopTimers();
+        console.log(timers['ElapsedTime'].timer.getTime());
+        var results = ComputerVision.compareImages(
+            getAnswerImageData(),
+            context.getImageData(0, 0, gameState.containerWidth, gameState.containerHeight),
+            gameState.containerWidth,
+            gameState.containerHeight,
+            gameState.difficulty
+        );
+        console.log(results);
+        window.router.getRoute('scoreGame')();
     }
 
     function getAnswerImageData() {
@@ -135,31 +222,12 @@ var GameController = (function(){
         return context.getImageData(0, 0, canvas.width, canvas.height);
     }
 
-    // drawing finished! time to score and update
-    function onTimerExpiredCallback(timingData) {
-        gameState.paused = true;
-        if (currentPage === gameState.maxPages - 1) {
-            gameState.gameOver = true;
-        }
-        console.log(timingData);
-        var results = ComputerVision.compareImages(
-            getAnswerImageData(),
-            context.getImageData(0, 0, gameState.containerWidth, gameState.containerHeight),
-            gameState.containerWidth,
-            gameState.containerHeight,
-            gameState.difficulty
-        );
-        console.log(results);
-        window.router.getRoute('scoreGame')();
-    }
-
     function resetGameState() {
-        elapsedTimerStarted = false;
         drawingStarted = false;
         enableDraw = false;
         gameState.gameOver = false;
         clearWritingCanvas();
-        gameTimer.restart();
+        stopTimers();
     }
 
     return {
@@ -168,10 +236,8 @@ var GameController = (function(){
 
             initializeGameDisplay();
 
-            gameTimer = new GameTimer();
-            var gameTimerCanvas = gameTimer.initialize();
             writingCanvas = initDrawingCanvas();
-            return [ gameDisplay.canvas, gameTimerCanvas, writingCanvas ];
+            return [ gameDisplay.canvas, writingCanvas ];
         },
         restartGame: function() {
             resetGameState();
@@ -180,18 +246,16 @@ var GameController = (function(){
             if (gameState.paused) {
                 return false;
             }
-            elapsedTimerStarted = false;
             drawingStarted = false;
             enableDraw = false;
             gameState.resetState();
-            gameTimer.destroy();
+            stopTimers();
+            timers = [];
             return CanvasRenderer.destroy(elements);
         },
         resumeGame: function() {
             gameState.paused = false;
-            if (elapsedTimerStarted) {
-                gameTimer.restartElapsedTimer();
-            }
+            startTimers();
         },
         advanceGame: function() {
             resetGameState();

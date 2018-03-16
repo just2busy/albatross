@@ -3,13 +3,17 @@ var Preferences = (function() {
     var canvasId = 'preferencesCanvas'
     var gameState = window.gameState;
 
-    var defaultButtonStyles = [{property: 'fillStyle', value: 'black'}];
-    var defaultTextStyles = [{property: 'font', value: '30px Comic Sans MS'},
-        {property: 'fillStyle', value: 'black'},
-        {property: 'textAlign', value: 'center'},
-        {property: 'textBaseline', value: 'middle'}];
-    var buttonStyles = defaultButtonStyles;
-    var textStyles = defaultTextStyles;
+    var defaultButtonStyles = { 
+        fillStyle: 'rgba(0,0,0,1)',
+        strokeStyle: 'rgba(0,0,0,1)'
+    };
+    var defaultTextStyles = {
+        font: '30px Times',
+        fillStyle: 'rgba(255,255,255,1)',
+        strokeStyle: 'rgba(255,255,255,1)',
+        textAlign: 'center',
+        textBaseline: 'middle'
+    };
 
     var buttonMethods = [];
 
@@ -46,9 +50,12 @@ var Preferences = (function() {
  
     function drawOptionButtons(type) {
         buttonMethods.forEach(function (buttonMethod) {
-            buttonStyles = defaultButtonStyles;
+            buttonStyles = Object.assign({}, defaultButtonStyles);
             if (gameState.getOption(buttonMethod.optionType).name === buttonMethod.optionValue.name) {
-                buttonStyles = [{property: 'fillStyle', value: 'red'}];
+                buttonStyles = Object.assign(buttonStyles,{
+                    fillStyle: 'rgba(255,0,0,1)',
+                    strokeStyle: 'rgba(255,0,0,1)'
+                });
             }
             preferences.setButtonStyles(buttonStyles);
 
@@ -113,6 +120,7 @@ var Preferences = (function() {
         }, 'Custom Difficulty', 500, 175, 150, 50);
     }
 
+    // Fix the knob calculation so that it doesn't extend beyond the slider width
     function createSliderCallbackFunction(eventName, propertyName, leftBound, topBound, width, height) {
         var drawCustomSlider = function(x, y) {
             var property = difficultyRanges[propertyName];
@@ -120,7 +128,7 @@ var Preferences = (function() {
             var value = Math.max(Math.ceil((x - leftBound) / width * (maxValue - minValue) + minValue), minValue);
             value = value > maxValue ? maxValue : value;
             customDifficulty[propertyName] = value;
-            var knobX = value / maxValue * width + leftBound - 10;
+            var knobX = value / maxValue * width + leftBound;
             var sliderText = textValue + ': ' + value;
             drawSlider(eventName, drawCustomSlider, sliderText, knobX, leftBound, topBound, width, height);
         }
@@ -136,10 +144,13 @@ var Preferences = (function() {
     }
 
     function drawSlider(eventName, eventCallback, sliderText, knobX, x, y, width, height) {
-        var textStyles = [{property: 'font', value: '15px Comic Sans MS'},
-            {property: 'fillStyle', value: 'black'},
-            {property: 'textAlign', value: 'center'},
-            {property: 'textBaseline', value: 'top'}];
+        var textStyles = Object.assign({}, defaultTextStyles);
+        textStyles = Object.assign(textStyles, {
+            font: '15px Comic Sans MS',
+            fillStyle: 'rgba(0,0,0,1)',
+            strokeStyle: 'rgba(0,0,0,1)',
+            textBaseline: 'top'
+        });
         preferences.createSlider(eventName, eventCallback, sliderText, knobX, x, y, width, height, textStyles, defaultButtonStyles);
     }
 
@@ -157,7 +168,13 @@ var Preferences = (function() {
     }
 
     function displayLinkCode(linkDeviceCode) {
-        CanvasRenderer.writeText(preferences.getContext(), linkDeviceCode, gameState.containerWidth / 2, gameState.containerHeight / 2.25, defaultTextStyles);
+        var textStyles = Object.assign({}, defaultTextStyles);
+        textStyles = Object.assign(textStyles, {
+            font: '30px Times',
+            fillStyle: 'rgba(0,0,0,1)',
+            strokeStyle: 'rgba(0,0,0,1)'
+        });
+        CanvasRenderer.writeText(preferences.getContext(), linkDeviceCode, gameState.containerWidth / 2, gameState.containerHeight / 2.25, textStyles);
     }
 
     return {

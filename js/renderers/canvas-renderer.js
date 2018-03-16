@@ -1,16 +1,12 @@
 var CanvasRenderer = (function() {
     function setContextStyle(context, styles) {
         if (styles) {
-            styles.forEach(function(style) {
-                context[style.property] = style.value;
-            });
+            Object.assign(context, styles);
         }
     }
 
     function determineX(x, width, textStyles, textMargin) {
-        var align = textStyles.filter(function (style) {
-            return style.property === 'textAlign';
-        })[0].value;
+        var align = textStyles.textAlign;
         var newX;
         switch (align) {
             case 'left': newX = x + textMargin; break;
@@ -21,9 +17,7 @@ var CanvasRenderer = (function() {
     }
 
     function determineY(y, height, textStyles, textMargin) {
-        var baseline = textStyles.filter(function (style) {
-            return style.property === 'textBaseline';
-        })[0].value;
+        var baseline = textStyles.textBaseline;
         var newY;
         switch (baseline) {
             case 'top': newY = y + textMargin; break;
@@ -53,10 +47,8 @@ var CanvasRenderer = (function() {
             this.drawRectangle(context, x, y, width, height, buttonStyles);
             var lineTexts = this.createMultilineText(context, buttonText, width, textStyles, textMargin || 0);
             var avgHeight = Math.floor(height / lineTexts.length);
-            var textX = determineX(x, width, textStyles, textMargin);
-            var textY = determineY(y, avgHeight, textStyles, textMargin);
             for(var i = 0;i < lineTexts.length; i++) {
-                this.writeText(context, lineTexts[i], textX, textY + i * avgHeight, textStyles);
+                this.writeText(context, lineTexts[i], x, y + i * avgHeight, textStyles, width, avgHeight, textMargin);
             }
         },
 
@@ -78,17 +70,17 @@ var CanvasRenderer = (function() {
 
         drawSlider: function(context, text, knobX, x, y, width, height, textStyles, sliderStyles) {
             this.clearRectangle(context, x - 5, y - 5, width + 10, height + 10);
-            var textX = determineX(x, width, textStyles, 0);
-            var textY = determineY(y, height, textStyles, 0);
-            this.writeText(context, text, textX, textY, textStyles);
+            this.writeText(context, text, x, y, textStyles, width, height);
             this.drawRectangle(context, x, y + height - 10, width, 5, sliderStyles);
             this.drawRectangle(context, knobX, y + height - 15, 5, 15, sliderStyles);
         },
 
-        writeText: function(context, text, x, y, styles) {
+        writeText: function(context, text, x, y, styles, width, height, textMargin) {
             setContextStyle(context, styles);
+            var textX = determineX(x, width || 0, styles, textMargin || 0);
+            var textY = determineY(y, height || 0, styles, textMargin || 0);
             context.beginPath();
-            context.fillText(text, x, y);
+            context.fillText(text, textX, textY);
             context.closePath();
         },
 

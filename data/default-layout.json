@@ -1,0 +1,133 @@
+{
+    "gameModeRenderers": [
+        {
+            "renderer": "GameModeRenderer",
+            "layout":  {
+                "canvas": {
+                    "width": 700,
+                    "height": 300,
+                    "resize": true
+                },
+                "textStyles": {
+                    "font": {
+                        "fontSize": "50px",
+                        "fontFamily": "Comic Sans MS"
+                    },
+                    "fillStyle": "rgba(0,0,0,1)",
+                    "strokeStyle": "rgba(0,0,0,1)",
+                    "textAlign": "center",
+                    "textBaseline": "middle"
+                },
+                "circleStyles": {
+                    "fillStyle": "rgba(0,0,0,1)",
+                    "strokeStyle": "rgba(0,0,0,1)"
+                },
+                "question": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 700,
+                    "height": 60,
+                    "resize": true
+                },
+                "answer": {
+                    "x": 0,
+                    "y": 60,
+                    "width": 700,
+                    "height": 180,
+                    "resize": true
+                },
+                "times": {},
+                "drawing": {
+                    "x": 0,
+                    "y": 60,
+                    "width": 700,
+                    "height": 180,
+                    "resize": true
+                },
+                "score": {}
+            }
+        },
+        {
+            "renderer": "PracticeModeRenderer",
+            "layout": {
+                "times": {
+                    "ElapsedTime": {
+                        "x": 50,
+                        "y": 50,
+                        "r": 20,
+                        "textStyles": {
+                            "font": {
+                                "fontSize": "10px"
+                            },
+                            "fillStyle": "rgba(255,255,255,1)",
+                            "strokeStyle": "rgba(255,255,255,1)"
+                        },
+                        "renderMode": "always",
+                        "totalTime": false,
+                        "resize": true
+                    }
+                }
+            }
+        },
+        {
+            "renderer": "TimedModeRenderer",
+            "layout": {
+                "times": {
+                    "TotalElapsedTime": {
+                        "x": 50,
+                        "y": 50,
+                        "r": 20,
+                        "textStyles": {
+                            "font": {
+                                "fontSize": "10px"
+                            },
+                            "fillStyle": "rgba(255,255,255,1)",
+                            "strokeStyle": "rgba(255,255,255,1)"
+                        },
+                        "renderMode": "always",
+                        "totalTime": true,
+                        "resize": true
+                    },
+                    "ElapsedTime": {
+                        "x": 650,
+                        "y": 50,
+                        "r": 20,
+                        "textStyles": {
+                            "font": {
+                                "fontSize": "10px"
+                            },
+                            "fillStyle": "rgba(255,255,255,1)",
+                            "strokeStyle": "rgba(255,255,255,1)"
+                        },
+                        "renderMode": "always",
+                        "totalTime": false,
+                        "maxTime": 5000,
+                        "resize": true
+                    }
+                }
+            }
+        },
+        {
+            "renderer": "QuizModeRenderer"
+        },
+        {
+            "renderer": "JeopardyModeRenderer",
+            "layout": {
+                "answer": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 700,
+                    "height": 60,
+                    "resize": true
+                },
+                "question": {
+                    "x": 0,
+                    "y": 60,
+                    "width": 700,
+                    "height": 180,
+                    "resize": true
+                }
+            }
+        }
+    ]
+}

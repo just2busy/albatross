@@ -1,8 +1,23 @@
 {
     "packageName": "Lower Case Greek Alphabet Letters",
     "packagePrice": 0,
+    "packageVersion": 0.01,
     "languageName": "Greek",
     "languageCode": "el",
+    "gameModeRenderers": [
+        {
+            "renderer": "PracticeModeRenderer"
+        },
+        {
+            "renderer": "TimedModeRenderer"
+        },
+        {
+            "renderer": "QuizModeRenderer"
+        },
+        {
+            "renderer": "JeopardyModeRenderer"
+        }
+    ],
     "pages": [
       {
         "audio": "",

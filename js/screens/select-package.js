@@ -12,16 +12,14 @@ var SelectPackage = (function () {
     // TODO: convert from local files to single server API call
     function renderPackages() {
         packagesLocation = packagesLocation || "data/packages.json";
-        $.when($.getJSON(packagesLocation, function(data) {
+        $.getJSON(packagesLocation, function(data) {
+            var currentPackage = 0;
             data.packages.forEach(function(packageLocation) {
                 $.getJSON(packageLocation, function(package) {
                     packages.push(package);
+                    renderPackageButton(currentPackage++);
                 });
             });
-        })).then(function() {
-            for(var i = 0; i < packagesPerRow * displayedRows && i < packages.length; i++) {
-                renderPackageButton(i);
-            }
         });
     }
 

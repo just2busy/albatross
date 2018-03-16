@@ -2,11 +2,17 @@ var CanvasNavigation = (function () {
     var navigation = new PointerEventsNavigation();
     var canvas, context;
 
-    var defaultButtonStyles = [{property: 'fillStyle', value: 'black'}];
-    var defaultTextStyles = [{property: 'font', value: '20px Times'},
-        {property: 'fillStyle', value: 'white'},
-        {property: 'textAlign', value: 'center'},
-        {property: 'textBaseline', value: 'middle'}];
+    var defaultButtonStyles = { 
+        fillStyle: 'rgba(0,0,0,1)',
+        strokeStyle: 'rgba(0,0,0,1)'
+    };
+    var defaultTextStyles = {
+        font: '20px Times',
+        fillStyle: 'rgba(255,255,255,1)',
+        strokeStyle: 'rgba(255,255,255,1)',
+        textAlign: 'center',
+        textBaseline: 'middle'
+    };
     var buttonStyles = defaultButtonStyles;
     var textStyles = defaultTextStyles;
 
