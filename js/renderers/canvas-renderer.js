@@ -28,6 +28,8 @@ var CanvasRenderer = (function() {
     }
 
     return {
+        setContextStyle: setContextStyle,
+        
         createElement: function(containerId, elementId, elementType) {
             var element = document.createElement(elementType);
             element.id = elementId;

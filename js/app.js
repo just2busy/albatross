@@ -1,5 +1,6 @@
 function startApp() {
     addRoutes();
+    addKeyEvents();
 }
 
 function addRoutes() {
@@ -14,4 +15,8 @@ function addRoutes() {
     window.router.addRoute('pauseGame', PauseGame.pauseGame, false, CanvasRenderer.destroy);
     window.router.addRoute('scoreGame', PauseGame.scoreGame, false, CanvasRenderer.destroy);
     window.router.getRoute('mainMenu')();
+}
+
+function addKeyEvents() {
+    GameController.addKeyEvents();
 }

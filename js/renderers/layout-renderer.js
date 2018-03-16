@@ -43,7 +43,7 @@ var LayoutRenderer = (function() {
         },
 
         getStyles: function(layout, id, styleType) {
-            var styles = Object.assign({}, JSON.parse(JSON.stringify(layout[styleType])));
+            var styles = Object.assign({}, JSON.parse(JSON.stringify(getNestedProperty(layout, null, styleType))));
             styles = Object.assign(styles, JSON.parse(JSON.stringify(getNestedProperty(layout, id, styleType))));
             buildFontProperty(styles);
             return styles;

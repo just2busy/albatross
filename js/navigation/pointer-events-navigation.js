@@ -27,7 +27,10 @@ var PointerEventsNavigation = (function() {
     return {
         onPointerUp: function(event) {
             if (isActive) {
-                currentCallbackFunction.callbackFunction(event.offsetX, event.offsetY);
+                var x = event.offsetX, y = event.offsetY;
+                if(currentCallbackFunction.conditionFunction(x, y)) {
+                    currentCallbackFunction.callbackFunction(x, y, false);
+                }
                 resetState();
             }
         },
@@ -42,7 +45,13 @@ var PointerEventsNavigation = (function() {
 
         onPointerMove: function(event) {
             if (isActive && currentCallbackFunction && currentCallbackFunction.callIfActive) {
-                currentCallbackFunction.callbackFunction(event.offsetX, event.offsetY);
+                var x = event.offsetX, y = event.offsetY;
+                if(currentCallbackFunction.conditionFunction(x, y)) {
+                    currentCallbackFunction.callbackFunction(x, y, isActive);
+                } else {
+                    currentCallbackFunction.callbackFunction(x, y, false);
+                    resetState();
+                }
             }
         },
 
@@ -69,6 +78,8 @@ var PointerEventsNavigation = (function() {
             callbackFunctions = callbackFunctions.filter(function(callbackFunction) {
                 return callbackFunction.eventName !== eventName;
             });
-        }
+        },
+
+        resetState: resetState
     }
 });

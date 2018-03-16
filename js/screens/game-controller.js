@@ -1,77 +1,71 @@
 var GameController = (function(){
+    var gameScreen = new CanvasNavigation();
     var gameState, availablePages = [], currentPage = 0;
     var layout, timers = {}, gameDisplay, gameDisplayTimerId;
-    var drawingStarted = false, enableDraw = false;
+    var drawingStarted = false, enableDraw = false, scoring = false;
     var writingCanvas, writingCanvasId = 'drawingCanvas', context;
 
     function initDrawingCanvas() {
-        writingCanvas = CanvasRenderer.createCanvas(gameState.containerId, writingCanvasId, gameState.containerWidth, gameState.containerHeight);
-        context = writingCanvas.getContext('2d');
-        context.strokeStyle = gameState.preferences.fontColor;
-        context.lineWidth = 6;
-        writingCanvas.addEventListener('pointermove', onPointerMove, false);
-        writingCanvas.addEventListener('pointerdown', onPointerDown, false); 
-        writingCanvas.addEventListener('pointerup', onPointerUp, false); 
-        writingCanvas.addEventListener('pointerout', onPointerUp, false);
-        document.addEventListener('keyup', onKeyUp, false);
-
+        writingCanvas = gameScreen.init(gameState.containerId, writingCanvasId, gameState.containerWidth, gameState.containerHeight);
+        context = gameScreen.getContext();
+        initializeDrawingArea();
+        drawScoreButton();
         return writingCanvas;
     }
 
-    function onPointerMove(event) {
-        var x, y;
-        x = event.offsetX;
-        y = event.offsetY;
-        if (enableDraw) {
-            if (!drawingStarted) { 
-                drawingStarted = true; 
-                context.beginPath(); 
-                context.moveTo(x, y); 
-            } 
-            else { 
-                context.lineTo(x, y); 
-                context.stroke(); 
-            }
-        }
+    function drawScoreButton() {
+        gameScreen.createButton('scoreEvent', calculateScore, 'Score Writing', 275, 245, 150, 50, 0, true);
     }
 
-    function onPointerDown(event) {
-        if (!drawingStarted) {
-            drawingStarted = true;
-            startTimers();
-        }
-        enableDraw = true;
-        context.beginPath();
+    function initializeDrawingArea() {
+        var drawingLayout = layout.drawing;
+        // draw a button first then clear it to get the region hit
+        gameScreen.createButton('drawingEvent', drawOnWritingCanvas, '', drawingLayout.x, drawingLayout.y, drawingLayout.width, drawingLayout.height, 0, true);
+        clearWritingCanvas();
     }
 
-    function onPointerUp(event) {
-        if (drawingStarted) {
-            if (enableDraw) {
-                context.closePath();
-                enableDraw = false;
-            }
-        }
-    }
-
-    function onKeyUp(event) {
-        if (window.router.getCurrentRoute() === 'game') {
-            var key = event.keyCode;
-            switch(key) {
-                case 80: // p
+    function drawOnWritingCanvas(x, y, isActive) {
+        if (!scoring) {
+            if (isActive) {
+                var drawingStyles = LayoutRenderer.getStyles(layout, 'drawing', 'drawingStyles');
+                CanvasRenderer.setContextStyle(context, drawingStyles);
+                if (!drawingStarted) {
+                    drawingStarted = true;
+                    startTimers();
+                }
+                if (enableDraw) {
+                    context.lineTo(x, y); 
+                    context.stroke(); 
+                } else {
+                    enableDraw = true;
+                    context.beginPath(); 
+                    context.moveTo(x, y);
+                }
+            } else {
+                if (drawingStarted) {
                     if (enableDraw) {
                         context.closePath();
                         enableDraw = false;
                     }
-                    gameState.paused = true;
-                    stopTimers();
-                    window.router.getRoute('pauseGame')();
-                    break;
+                }    
             }
         }
     }
 
+    function pauseGame() {
+        if (enableDraw) {
+            context.closePath();
+            enableDraw = false;
+        }
+        gameState.paused = true;
+        stopTimers();
+        window.router.getRoute('pauseGame')();
+        gameScreen.resetState();
+    }
+
     function clearWritingCanvas() {
-        CanvasRenderer.clearRectangle(this.context, 0, 0, this.canvas.width, this.canvas.height);
+        var drawingLayout = layout.drawing;
+        CanvasRenderer.clearRectangle(context, drawingLayout.x, drawingLayout.y, drawingLayout.width, drawingLayout.height);
     }
 
     function generatePages() {
@@ -193,6 +187,7 @@ var GameController = (function(){
     // drawing finished! time to score and update
     function calculateScore() {
         gameState.paused = true;
+        scoring = true;
         if (currentPage === gameState.maxPages - 1) {
             gameState.gameOver = true;
         }
@@ -223,6 +218,7 @@ var GameController = (function(){
     }
 
     function resetGameState() {
+        scoring = false;
         drawingStarted = false;
         enableDraw = false;
         gameState.gameOver = false;
@@ -246,11 +242,12 @@ var GameController = (function(){
             if (gameState.paused) {
                 return false;
             }
+            scoring = false;
             drawingStarted = false;
             enableDraw = false;
             gameState.resetState();
             stopTimers();
-            timers = [];
+            timers = {};
             return CanvasRenderer.destroy(elements);
         },
         resumeGame: function() {
@@ -262,6 +259,9 @@ var GameController = (function(){
             currentPage++;
             gameDisplay.page = getPage();
             gameDisplay.render();
+        },
+        addKeyEvents: function() {
+            window.router.addKeyEvents('game', 80, pauseGame);
         }
     }
 }());

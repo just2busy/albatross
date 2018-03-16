@@ -4,7 +4,8 @@ var CanvasNavigation = (function () {
 
     var defaultButtonStyles = { 
         fillStyle: 'rgba(0,0,0,1)',
-        strokeStyle: 'rgba(0,0,0,1)'
+        strokeStyle: 'rgba(0,0,0,1)',
+        lineWidth: 1
     };
     var defaultTextStyles = {
         font: '20px Times',
@@ -28,6 +29,7 @@ var CanvasNavigation = (function () {
             canvas.addEventListener('pointermove', navigation.onPointerMove, false);
             canvas.addEventListener('pointerdown', navigation.onPointerDown, false); 
             canvas.addEventListener('pointerup', navigation.onPointerUp, false); 
+            canvas.addEventListener('pointerout', navigation.onPointerUp, false); 
         },
 
         createSlider: function(eventName, callbackFunction, sliderText, knobX, x, y, width, height, textStyles, sliderStyles) {
@@ -36,10 +38,10 @@ var CanvasNavigation = (function () {
             navigation.addCallback(eventName, callbackFunction, conditionFunction, true);
         },
 
-        createButton: function(eventName, callbackFunction, buttonText, x, y, width, height, textMargin) {
+        createButton: function(eventName, callbackFunction, buttonText, x, y, width, height, textMargin, callIfActive) {
             CanvasRenderer.createButton(context, buttonText, x, y, width, height, buttonStyles, textStyles, textMargin);
             conditionFunction = navigation.regionHitConditionFunction(x, y, width, height);
-            navigation.addCallback(eventName, callbackFunction, conditionFunction);
+            navigation.addCallback(eventName, callbackFunction, conditionFunction, callIfActive);
         },
 
         setButtonStyles: function(styles) {
@@ -56,6 +58,10 @@ var CanvasNavigation = (function () {
         
         getContext: function() {
             return context;
+        },
+
+        resetState: function() {
+            navigation.resetState();
         }
     }
 });

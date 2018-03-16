@@ -1,6 +1,20 @@
 var Router = (function() {
     var routes = [];
     var currentZIndex = 0, breadCrumbs = [];
+    var keyEventHandlers = {};
+
+    document.addEventListener('keyup', onKeyUp, false);
+
+    function onKeyUp(event) {
+        console.log(this);
+        var key = event.keyCode;
+        var keyEventHandler = keyEventHandlers[window.router.getCurrentRoute()];
+        if (keyEventHandler) {
+            if (keyEventHandler[key]) {
+                keyEventHandler[key]();
+            }
+        }
+    }
 
     function cleanup() {
         var backtrack = false;
@@ -53,6 +67,13 @@ var Router = (function() {
     }
 
     return {
+        addKeyEvents: function(route, key, callback) {
+            if(!keyEventHandlers[route]) {
+                keyEventHandlers[route] = {};
+            }
+            keyEventHandlers[route][key] = callback;
+        },
+
         addRoute: function(routeName, callback, hideOnExit, destroyOnExit) {
             routes.push({
                 routeName: routeName,

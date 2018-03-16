@@ -15,12 +15,19 @@
                     },
                     "fillStyle": "rgba(0,0,0,1)",
                     "strokeStyle": "rgba(0,0,0,1)",
+                    "lineWidth": 1,
                     "textAlign": "center",
                     "textBaseline": "middle"
                 },
+                "buttonStyles": {
+                    "fillStyle": "rgba(0,0,0,1)",
+                    "strokeStyle": "rgba(0,0,0,1)",
+                    "lineWidth": 1
+                },
                 "circleStyles": {
                     "fillStyle": "rgba(0,0,0,1)",
-                    "strokeStyle": "rgba(0,0,0,1)"
+                    "strokeStyle": "rgba(0,0,0,1)",
+                    "lineWidth": 1
                 },
                 "question": {
                     "x": 0,
@@ -42,6 +49,11 @@
                     "y": 60,
                     "width": 700,
                     "height": 180,
+                    "drawingStyles": {
+                        "fillStyle": "rgba(255,0,0,1)",
+                        "strokeStyle": "rgba(255,0,0,1)",
+                        "lineWidth": 6
+                    },
                     "resize": true
                 },
                 "score": {}
@@ -52,8 +64,8 @@
             "layout": {
                 "times": {
                     "ElapsedTime": {
-                        "x": 50,
-                        "y": 50,
+                        "x": 25,
+                        "y": 25,
                         "r": 20,
                         "textStyles": {
                             "font": {
@@ -74,8 +86,8 @@
             "layout": {
                 "times": {
                     "TotalElapsedTime": {
-                        "x": 50,
-                        "y": 50,
+                        "x": 25,
+                        "y": 25,
                         "r": 20,
                         "textStyles": {
                             "font": {
@@ -89,8 +101,8 @@
                         "resize": true
                     },
                     "ElapsedTime": {
-                        "x": 650,
-                        "y": 50,
+                        "x": 675,
+                        "y": 25,
                         "r": 20,
                         "textStyles": {
                             "font": {
