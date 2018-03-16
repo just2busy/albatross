@@ -28,6 +28,7 @@ GameModeRenderer.prototype = {
     renderQuestion: function(questionStyles) {
         if (this.page.question) {
             var questionLayout = LayoutRenderer.getStyles(this.layout, null, 'question');
+            CanvasRenderer.clearRectangle(this.context, questionLayout.x, questionLayout.y, questionLayout.width, questionLayout.height);
             CanvasRenderer.writeText(this.context, this.page.question, questionLayout.x, questionLayout.y, questionStyles,
                 questionLayout.width, questionLayout.height);
         }
@@ -36,6 +37,7 @@ GameModeRenderer.prototype = {
     renderAnswer: function(answerStyles) {
         if (this.page.answer) {
             var answerLayout = LayoutRenderer.getStyles(this.layout, null, 'answer');
+            CanvasRenderer.clearRectangle(this.context, answerLayout.x, answerLayout.y, answerLayout.width, answerLayout.height);
             CanvasRenderer.writeText(this.context, this.page.answer, answerLayout.x, answerLayout.y, answerStyles,
                 answerLayout.width, answerLayout.height);
         }
@@ -73,6 +75,16 @@ GameModeRenderer.prototype = {
         delete this.canvas.style.backgroundRepeat;
         delete this.canvas.style.backgroundSize;
         CanvasRenderer.clearRectangle(this.context, 0, 0, this.canvas.width, this.canvas.height);
+    },
+
+    getAnswerImageData: function(fontColor) {
+        var scoreAnswerStyles = Object.assign({}, JSON.parse(JSON.stringify(this.answerStyles)), 
+            {fillStyle: fontColor, strokeStyle: fontColor});
+        this.renderAnswer(scoreAnswerStyles);
+        var answerLayout = LayoutRenderer.getStyles(this.layout, null, 'answer');
+        var imgData = this.context.getImageData(answerLayout.x, answerLayout.y, answerLayout.width, answerLayout.height);
+        this.renderAnswer(this.answerStyles);
+        return imgData;
     }
 }
 
@@ -106,6 +118,16 @@ QuizModeRenderer.prototype.render = function() {
     GameModeRenderer.prototype.render.call(this);
     this.renderQuestion(this.questionStyles);
 };
+QuizModeRenderer.prototype.getAnswerImageData = function(fontColor) {
+    var scoreAnswerStyles = Object.assign({}, JSON.parse(JSON.stringify(this.answerStyles)), 
+        {fillStyle: fontColor, strokeStyle: fontColor});
+    this.renderAnswer(scoreAnswerStyles);
+    var answerLayout = LayoutRenderer.getStyles(this.layout, null, 'answer');
+    var imgData = this.context.getImageData(answerLayout.x, answerLayout.y, answerLayout.width, answerLayout.height);
+    CanvasRenderer.clearRectangle(this.context, answerLayout.x, answerLayout.y, answerLayout.width, answerLayout.height);
+    return imgData;
+};
+
 
 function JeopardyModeRenderer(page, layout) {
     GameModeRenderer.call(this, page, layout);
@@ -115,4 +137,13 @@ JeopardyModeRenderer.prototype.constructor = JeopardyModeRenderer;
 JeopardyModeRenderer.prototype.render = function() {
     GameModeRenderer.prototype.render.call(this);
     this.renderAnswer(this.questionStyles);
+};
+QuizModeRenderer.prototype.getAnswerImageData = function(fontColor) {
+    var scoreAnswerStyles = Object.assign({}, JSON.parse(JSON.stringify(this.answerStyles)), 
+        {fillStyle: fontColor, strokeStyle: fontColor});
+    this.renderQuestion(scoreAnswerStyles);
+    var questionLayout = LayoutRenderer.getStyles(this.layout, null, 'question');
+    var imgData = this.context.getImageData(questionLayout.x, questionLayout.y, questionLayout.width, questionLayout.height);
+    CanvasRenderer.clearRectangle(this.context, questionLayout.x, questionLayout.y, questionLayout.width, questionLayout.height);
+    return imgData;
 };

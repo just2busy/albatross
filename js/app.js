@@ -12,8 +12,8 @@ function addRoutes() {
     window.router.addRoute('advanceGame', GameController.advanceGame, false, CanvasRenderer.destroy);
     window.router.addRoute('resumeGame', GameController.resumeGame, false, CanvasRenderer.destroy);
     window.router.addRoute('restartGame', GameController.restartGame, false, CanvasRenderer.destroy);
-    window.router.addRoute('pauseGame', PauseGame.pauseGame, false, CanvasRenderer.destroy);
-    window.router.addRoute('scoreGame', PauseGame.scoreGame, false, CanvasRenderer.destroy);
+    window.router.addRoute('pauseGame', GameModal.pauseGame, false, CanvasRenderer.destroy);
+    window.router.addRoute('scoreGame', GameModal.scoreGame, false, CanvasRenderer.destroy);
     window.router.getRoute('mainMenu')();
 }
 

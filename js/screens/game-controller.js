@@ -119,11 +119,11 @@ var GameController = (function(){
                 timeRemaining = timeRemaining / 1000;
                 timeRemaining = timeRemaining.toFixed(1);
                 time.circleStyles.fillStyle = 'rgba('+Math.floor(255 * percent)+',0,0,1)';
-                if (timeRemaining <= 0) {
-                    timeRemaining = 0;
-                    setTimeout(calculateScore.bind(this), 100);
-                }
                 time.time = timeRemaining;
+                if (timeRemaining <= 0) {
+                    time.time = 0;
+                    calculateScore();
+                }
             }
         }
         return function(timeElapsed) {
@@ -155,17 +155,13 @@ var GameController = (function(){
         });
     }
 
-    // TODO: handle start/resume/restart
-    // start - totalTime restarts, !totalTime starts
-    // resume - totalTime restarts, !totalTime restarts
-    // restart - totalTime starts from last lap, !totalTime starts
     function startTimers() {
         Object.keys(timers).forEach(function(timerId) {
             var timer = timers[timerId];
             if (timer.time.renderMode !== 'hidden') {
                 timer.time.display = true;
             }
-            if (timer.time.totalTime) {
+            if (timer.time.totalTime || drawingStarted) {
                 timer.timer.restartTimer();
             } else {
                 timer.timer.startTimer();
@@ -174,56 +170,55 @@ var GameController = (function(){
         gameDisplayTimerId = setInterval(gameDisplay.renderTimes.bind(gameDisplay), 100);
     }
 
-    function stopTimers() {
+    function stopTimers(destroy) {
         Object.keys(timers).forEach(function(timerId) {
             var timer = timers[timerId];
-            timer.timer.lapTimer();
-            timer.timer.stopTimer();
+            if (destroy) {
+                timer.timer.destroy();
+                timer.time.display = false;
+                gameDisplay.clearTime(timer.time);
+            } else {
+                if (timer.time.totalTime) {
+                    timer.timer.lapTimer();
+                }
+                timer.timer.stopTimer();
+            }
         });
-        clearInterval(gameDisplayTimerId);
+        setTimeout(function() {clearInterval(gameDisplayTimerId);}, 100);
         gameDisplayTimerId = null;
     }
 
     // drawing finished! time to score and update
     function calculateScore() {
+        console.log(this);
         gameState.paused = true;
         scoring = true;
         if (currentPage === gameState.maxPages - 1) {
             gameState.gameOver = true;
         }
         stopTimers();
-        console.log(timers['ElapsedTime'].timer.getTime());
+
+        var drawingLayout = layout.drawing;
+        console.log('Time Stamp: ' + Date.now() + ' ElapsedTime: ' + timers['ElapsedTime'].timer.getTime());
         var results = ComputerVision.compareImages(
-            getAnswerImageData(),
-            context.getImageData(0, 0, gameState.containerWidth, gameState.containerHeight),
-            gameState.containerWidth,
-            gameState.containerHeight,
+            gameDisplay.getAnswerImageData(gameState.preferences.fontColor),
+            context.getImageData(drawingLayout.x, drawingLayout.y, drawingLayout.width, drawingLayout.height),
+            drawingLayout.width,
+            drawingLayout.height,
             gameState.difficulty
         );
         console.log(results);
+
         window.router.getRoute('scoreGame')();
     }
 
-    function getAnswerImageData() {
-        var canvas = document.createElement('canvas');
-        canvas.width = gameState.containerWidth;
-        canvas.height = gameState.containerHeight;
-        var context = canvas.getContext('2d');
-        context.font = '200px Comic Sans MS';
-        context.fillStyle = gameState.preferences.fontColor;
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.fillText(getPage().answer, canvas.width / 2, canvas.height / 2);
-        return context.getImageData(0, 0, canvas.width, canvas.height);
-    }
-
-    function resetGameState() {
+    function resetGameState(destroy) {
         scoring = false;
         drawingStarted = false;
         enableDraw = false;
         gameState.gameOver = false;
         clearWritingCanvas();
-        stopTimers();
+        stopTimers(destroy);
     }
 
     return {
@@ -236,7 +231,7 @@ var GameController = (function(){
             return [ gameDisplay.canvas, writingCanvas ];
         },
         restartGame: function() {
-            resetGameState();
+            resetGameState(true);
         },
         destroy: function(elements) {
             if (gameState.paused) {
@@ -252,7 +247,9 @@ var GameController = (function(){
         },
         resumeGame: function() {
             gameState.paused = false;
-            startTimers();
+            if (drawingStarted) {
+                startTimers();
+            }
         },
         advanceGame: function() {
             resetGameState();

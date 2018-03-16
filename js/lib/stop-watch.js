@@ -34,6 +34,9 @@ var StopWatch = function(startCallback, stopCallback) {
 
         restartTimer: function() {
             var offset = startTime - stopTime;
+            if (lapTimes.length) {
+                offset = -lapTimes[lapTimes.length - 1];
+            }
             startInterval(offset);
         },
 
@@ -48,6 +51,9 @@ var StopWatch = function(startCallback, stopCallback) {
         getTime: getTime,
 
         destroy: function() {
+            startTime = null;
+            stopTime = null;
+            lapTimes.splice(0, lapTimes.length);
             clearInterval(timerId);
         }
     }
